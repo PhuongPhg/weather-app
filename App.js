@@ -5,25 +5,44 @@ import Constants from "expo-constants";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
 
-const API_KEY = "a95d5c742e94123d916959181efa3ac2";
-const BASE_URL = "api.openweathermap.org/data/2.5/weather";
-
 export default class App extends React.Component{
   constructor(props){
     super(props)
     this.state = {
       loading: true,
       error: false,
+      location:{
+        name: "",
+        main: {temp: ""},
+        wind: {speed: ""},
+        weather: [{main: "", description: ""}]
+      }
     }
   }
   componentDidMount(){
     this.getLocationAsync()
+    // use async because we dont know how long it'will take for the user to allow to see the location
   }
   getLocationAsync = async () =>{
     const {status} = await Permissions.askAsync(Permissions.LOCATION);
     if(status !== "granted"){
       return ;
     }
+    const location = await Location.getCurrentPositionAsync();
+    this.getWeather(location.coords.latitude, location.coords.longitude);
+  }
+  getWeather = (latitude, longitude, imgUrl="") => {
+    this.setState({loading: true}, async () =>{
+      const API_KEY = "a95d5c742e94123d916959181efa3ac2";
+      const api = `api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`;
+      try {
+        const response = await fetch(api);
+        const jsonData = await response.json();
+        this.setState({location: {...jsonData, imgUrl}, loading: false})
+      } catch(error){
+        this.setState({error: true, loading: false})
+      }
+    })
   }
   render(){
     return(
