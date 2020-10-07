@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {Component, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Constants from "expo-constants";
 import * as Location from "expo-location";
@@ -8,28 +8,21 @@ import * as Permissions from "expo-permissions";
 const API_KEY = "a95d5c742e94123d916959181efa3ac2";
 const BASE_URL = "api.openweathermap.org/data/2.5/weather";
 
-export default class App extends React.Component{
-  constructor(props){
-    super(props)
-    this.state = {
-      loading: true,
-      error: false,
-    }
+export default function App() {
+  const [loading, setLoading]=useState(true);
+  useEffect(() => {
+    getLocationAsync();
+  }, []);
+
+  getLocationAsync = async ()=>{
+    const {status}=await Permissions.askAsync()
   }
-  componentDidMount(){
-    this.getLocationAsync()
-  }
-  getLocationAsync = async () =>{
-    const {status} = await Permissions.askAsync(Permissions.LOCATION);
-    if(status !== "granted"){
-      return ;
-    }
-  }
-  render(){
-    return(
-      <Text style={styles.container}>Hello</Text>
-    );
-  }
+  
+  return (
+    <View style={styles.container}>
+      <Text>Open up App.js to start working on your app!</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
